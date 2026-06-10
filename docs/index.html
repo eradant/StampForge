@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StampForge</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="panel source-panel" aria-label="Image source and processing controls">
+        <div class="brand">
+          <div class="mark" aria-hidden="true">SF</div>
+          <div>
+            <h1>StampForge</h1>
+            <p>Embossing stamp generator</p>
+          </div>
+        </div>
+
+        <label class="upload-zone" for="imageInput">
+          <input id="imageInput" type="file" accept="image/*">
+          <span class="upload-icon" aria-hidden="true">+</span>
+          <strong>Import artwork</strong>
+          <span>PNG, JPG, or SVG-compatible raster export</span>
+        </label>
+
+        <section class="control-group">
+          <div class="group-title">Image Prep</div>
+          <label>
+            Threshold
+            <span class="value"><output id="thresholdValue">auto</output></span>
+            <input id="threshold" type="range" min="5" max="250" value="126">
+          </label>
+          <label class="toggle-row">
+            <span>Auto threshold</span>
+            <input id="autoThreshold" type="checkbox" checked>
+          </label>
+          <label class="toggle-row">
+            <span>Use PNG transparency</span>
+            <input id="useAlpha" type="checkbox" checked>
+          </label>
+          <label class="toggle-row">
+            <span>Clean speckles</span>
+            <input id="cleanMask" type="checkbox" checked>
+          </label>
+          <label>
+            Smoothing
+            <input id="smoothing" type="range" min="0" max="4" step="1" value="1">
+          </label>
+          <label>
+            Detail grid
+            <input id="resolution" type="range" min="32" max="160" step="8" value="96">
+          </label>
+        </section>
+
+        <section class="control-group">
+          <div class="group-title">Artwork</div>
+          <label class="toggle-row">
+            <span>Invert height</span>
+            <input id="invert" type="checkbox">
+          </label>
+          <label class="toggle-row">
+            <span>Mirror for stamping</span>
+            <input id="mirror" type="checkbox" checked>
+          </label>
+          <label class="toggle-row">
+            <span>Show source mask</span>
+            <input id="showMask" type="checkbox">
+          </label>
+        </section>
+      </aside>
+
+      <section class="stage" aria-label="3D preview">
+        <div class="stage-toolbar">
+          <div class="segmented segmented-wide" role="group" aria-label="Die preview">
+            <button class="segment" data-view="positive" type="button">Male</button>
+            <button class="segment" data-view="negative" type="button">Female</button>
+            <button class="segment is-active" data-view="dieSet" type="button">Pair</button>
+          </div>
+          <button id="resetCamera" class="icon-button" type="button" title="Reset camera" aria-label="Reset camera">
+            <span aria-hidden="true">R</span>
+          </button>
+        </div>
+
+        <canvas id="preview" aria-label="Interactive 3D stamp preview"></canvas>
+        <canvas id="maskCanvas" width="220" height="220" aria-label="Processed artwork mask"></canvas>
+
+        <div class="stats-strip" aria-label="Model measurements">
+          <div>
+            <span id="modelSize">60 x 60 mm</span>
+            <small>footprint</small>
+          </div>
+          <div>
+            <span id="modelDepth">1.2 mm</span>
+            <small>relief</small>
+          </div>
+          <div>
+            <span id="modelGap">0.25 mm</span>
+            <small>forming gap</small>
+          </div>
+          <div>
+            <span id="modelPressure">hand press</span>
+            <small>suggested use</small>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel output-panel" aria-label="Stamp dimensions and export controls">
+        <section class="control-group">
+          <div class="group-title">Material Target</div>
+          <div class="preset-grid" role="group" aria-label="Material target">
+            <button class="preset is-active" data-preset="paper" type="button">
+              <strong>Paper</strong>
+              <span>Cards, covers, labels</span>
+            </button>
+            <button class="preset" data-preset="thinMetal" type="button">
+              <strong>Thin Sheet</strong>
+              <span>Foil, tags, shims</span>
+            </button>
+            <button class="preset" data-preset="thickMetal" type="button">
+              <strong>Press Metal</strong>
+              <span>Annealed blanks</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <div class="group-title">Dimensions</div>
+          <label>
+            Width
+            <span class="value"><output id="widthValue">60</output> mm</span>
+            <input id="stampWidth" type="range" min="20" max="120" value="60">
+          </label>
+          <label>
+            Relief depth
+            <span class="value"><output id="depthValue">1.2</output> mm</span>
+            <input id="reliefDepth" type="range" min="0.3" max="4.0" step="0.1" value="1.2">
+          </label>
+          <label>
+            Base thickness
+            <span class="value"><output id="baseValue">4.0</output> mm</span>
+            <input id="baseThickness" type="range" min="2" max="14" step="0.5" value="4">
+          </label>
+          <label>
+            Edge clearance
+            <span class="value"><output id="clearanceValue">3.0</output> mm</span>
+            <input id="edgeClearance" type="range" min="1" max="10" step="0.5" value="3">
+          </label>
+          <label>
+            Forming gap
+            <span class="value"><output id="gapValue">0.25</output> mm</span>
+            <input id="formingGap" type="range" min="0.05" max="1.2" step="0.05" value="0.25">
+          </label>
+          <label>
+            Edge soften
+            <span class="value"><output id="softenValue">1</output> pass</span>
+            <input id="edgeSoften" type="range" min="0" max="5" step="1" value="1">
+          </label>
+        </section>
+
+        <section class="control-group">
+          <div class="group-title">Structure</div>
+          <label class="toggle-row">
+            <span>Add press ribs</span>
+            <input id="pressRibs" type="checkbox">
+          </label>
+          <label class="toggle-row">
+            <span>Rounded footprint</span>
+            <input id="roundedBase" type="checkbox" checked>
+          </label>
+        </section>
+
+        <section class="export-box">
+          <button id="downloadStl" class="primary-button" type="button">Download Die Set STL</button>
+          <p id="printNote">0.2 mm nozzle or finer is recommended for crisp paper embossing.</p>
+        </section>
+      </aside>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

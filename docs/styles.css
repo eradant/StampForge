@@ -119,8 +119,13 @@ h1 {
 }
 
 .upload-zone:hover,
-.upload-zone:focus-within {
+.upload-zone:focus-within,
+.upload-zone.is-dragging {
   border-color: var(--accent);
+}
+
+.upload-zone.is-dragging {
+  background: #272b2e;
 }
 
 .upload-zone input {
@@ -168,6 +173,11 @@ input[type="range"] {
   grid-column: 1 / -1;
   width: 100%;
   accent-color: var(--accent);
+}
+
+input[type="range"]:disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .toggle-row {

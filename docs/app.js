@@ -135,6 +135,14 @@ const materials = {
   })
 };
 
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
 function mm(value) {
   return Number.parseFloat(value).toFixed(1).replace(".0", "");
 }
@@ -419,7 +427,8 @@ function addPressRibs(group, kind) {
   const width = Number(els.stampWidth.value);
   const base = Number(els.baseThickness.value);
   const depth = Number(els.reliefDepth.value);
-  const top = kind === "female" ? base + depth : base + depth;
+  const gap = Number(els.formingGap.value);
+  const top = kind === "female" ? base + depth - gap : base + depth;
   const ribHeight = Math.max(2, base * 0.18);
   const ribWidth = Math.max(2.4, width * 0.045);
   const length = width * 0.82;
@@ -538,8 +547,9 @@ function resize() {
   camera.updateProjectionMatrix();
 }
 
+new ResizeObserver(() => resize()).observe(els.canvas);
+
 function animate() {
-  resize();
   updateCamera();
   if (state.modelGroup && !state.dragging) state.modelGroup.rotation.z += 0.0015;
   renderer.render(scene, camera);
@@ -570,8 +580,7 @@ function pointerUp() {
   state.dragging = false;
 }
 
-function exportAsciiStl() {
-  const lines = ["solid stampforge"];
+function exportBinaryStl() {
   state.modelGroup.updateMatrixWorld(true);
   const normal = new THREE.Vector3();
   const a = new THREE.Vector3();
@@ -580,10 +589,25 @@ function exportAsciiStl() {
   const cb = new THREE.Vector3();
   const ab = new THREE.Vector3();
 
+  let triangleCount = 0;
   state.modelGroup.traverse((object) => {
     if (!object.isMesh) return;
-    const geometry = object.geometry.index ? object.geometry.toNonIndexed() : object.geometry;
-    const position = geometry.getAttribute("position");
+    const geo = object.geometry.index ? object.geometry.toNonIndexed() : object.geometry;
+    triangleCount += geo.getAttribute("position").count / 3;
+  });
+
+  const buffer = new ArrayBuffer(80 + 4 + triangleCount * 50);
+  const view = new DataView(buffer);
+  const encoder = new TextEncoder();
+  const header = encoder.encode("StampForge binary STL");
+  for (let i = 0; i < header.length; i++) view.setUint8(i, header[i]);
+  view.setUint32(80, triangleCount, true);
+
+  let offset = 84;
+  state.modelGroup.traverse((object) => {
+    if (!object.isMesh) return;
+    const geo = object.geometry.index ? object.geometry.toNonIndexed() : object.geometry;
+    const position = geo.getAttribute("position");
     for (let i = 0; i < position.count; i += 3) {
       a.fromBufferAttribute(position, i).applyMatrix4(object.matrixWorld);
       b.fromBufferAttribute(position, i + 1).applyMatrix4(object.matrixWorld);
@@ -591,27 +615,30 @@ function exportAsciiStl() {
       cb.subVectors(c, b);
       ab.subVectors(a, b);
       normal.crossVectors(cb, ab).normalize();
-      lines.push(`facet normal ${normal.x} ${normal.y} ${normal.z}`);
-      lines.push("  outer loop");
-      lines.push(`    vertex ${a.x} ${a.y} ${a.z}`);
-      lines.push(`    vertex ${b.x} ${b.y} ${b.z}`);
-      lines.push(`    vertex ${c.x} ${c.y} ${c.z}`);
-      lines.push("  endloop");
-      lines.push("endfacet");
+      view.setFloat32(offset, normal.x, true); offset += 4;
+      view.setFloat32(offset, normal.y, true); offset += 4;
+      view.setFloat32(offset, normal.z, true); offset += 4;
+      for (const v of [a, b, c]) {
+        view.setFloat32(offset, v.x, true); offset += 4;
+        view.setFloat32(offset, v.y, true); offset += 4;
+        view.setFloat32(offset, v.z, true); offset += 4;
+      }
+      view.setUint16(offset, 0, true); offset += 2;
     }
   });
 
-  lines.push("endsolid stampforge");
-  return lines.join("\n");
+  return buffer;
 }
 
 function downloadStl() {
-  const blob = new Blob([exportAsciiStl()], { type: "model/stl" });
+  const blob = new Blob([exportBinaryStl()], { type: "model/stl" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = `stampforge-${state.preset}-${state.view}.stl`;
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 
@@ -630,25 +657,45 @@ function loadFile(file) {
 }
 
 els.file.addEventListener("change", (event) => loadFile(event.target.files[0]));
+
+const uploadZone = document.querySelector(".upload-zone");
+uploadZone.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  uploadZone.classList.add("is-dragging");
+});
+uploadZone.addEventListener("dragleave", () => uploadZone.classList.remove("is-dragging"));
+uploadZone.addEventListener("drop", (event) => {
+  event.preventDefault();
+  uploadZone.classList.remove("is-dragging");
+  loadFile(event.dataTransfer.files[0]);
+});
 els.showMask.addEventListener("change", () => {
   els.maskCanvas.classList.toggle("is-visible", els.showMask.checked);
 });
+els.autoThreshold.addEventListener("change", () => {
+  els.threshold.disabled = els.autoThreshold.checked;
+});
+
+const rebuildDebounced = debounce(rebuildModel, 150);
 
 [
   els.threshold,
-  els.autoThreshold,
-  els.useAlpha,
-  els.cleanMask,
   els.smoothing,
   els.resolution,
-  els.invert,
-  els.mirror,
   els.stampWidth,
   els.reliefDepth,
   els.baseThickness,
   els.edgeClearance,
   els.formingGap,
-  els.edgeSoften,
+  els.edgeSoften
+].forEach((input) => input.addEventListener("input", rebuildDebounced));
+
+[
+  els.autoThreshold,
+  els.useAlpha,
+  els.cleanMask,
+  els.invert,
+  els.mirror,
   els.pressRibs,
   els.roundedBase
 ].forEach((input) => input.addEventListener("input", rebuildModel));
@@ -683,6 +730,8 @@ window.addEventListener("touchend", pointerUp);
 els.canvas.addEventListener("wheel", (event) => {
   state.distance = Math.min(360, Math.max(58, state.distance + event.deltaY * 0.08));
 });
+
+els.threshold.disabled = els.autoThreshold.checked;
 
 state.image = createSampleImage();
 state.image.addEventListener("load", () => {

@@ -44,9 +44,9 @@ const state = {
   view: "dieSet",
   preset: "paper",
   dragging: false,
-  yaw: -0.75,
-  pitch: 0.78,
-  distance: 285,
+  yaw: 0.7,
+  pitch: 0.45,
+  distance: 200,
   mask: null,
   modelGroup: null
 };
@@ -97,11 +97,11 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0x000000, 1);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x000000, 210, 460);
+scene.fog = new THREE.Fog(0x000000, 300, 600);
 
-const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 500);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 600);
 const floor = new THREE.GridHelper(260, 26, 0x0d2610, 0x071308);
-floor.position.y = -7;
+floor.position.y = -2;
 floor.material.opacity = 0.32;
 floor.material.transparent = true;
 scene.add(floor);
@@ -110,7 +110,7 @@ const hemi = new THREE.HemisphereLight(0x00ff66, 0x002200, 1.4);
 scene.add(hemi);
 
 const key = new THREE.DirectionalLight(0xccffdd, 2.4);
-key.position.set(-40, -65, 96);
+key.position.set(60, 80, 40);
 scene.add(key);
 
 const rim = new THREE.DirectionalLight(0x00ff88, 1.8);
@@ -530,12 +530,12 @@ function setPreset(name) {
 }
 
 function updateCamera() {
-  const target = new THREE.Vector3(0, 0, 8);
+  const target = new THREE.Vector3(0, 5, 0);
   const cp = Math.cos(state.pitch);
   camera.position.set(
     target.x + Math.sin(state.yaw) * cp * state.distance,
-    target.y + Math.cos(state.yaw) * cp * state.distance,
-    target.z + Math.sin(state.pitch) * state.distance
+    target.y + Math.sin(state.pitch) * state.distance,
+    target.z + Math.cos(state.yaw) * cp * state.distance
   );
   camera.lookAt(target);
 }
@@ -572,7 +572,7 @@ function pointerMove(event) {
   const dx = point.x - state.lastPointer.x;
   const dy = point.y - state.lastPointer.y;
   state.yaw -= dx * 0.008;
-  state.pitch = Math.min(1.34, Math.max(0.16, state.pitch + dy * 0.006));
+  state.pitch = Math.min(1.45, Math.max(0.05, state.pitch + dy * 0.006));
   state.lastPointer = point;
 }
 
@@ -715,9 +715,9 @@ document.querySelectorAll("[data-view]").forEach((button) => {
 });
 
 els.resetCamera.addEventListener("click", () => {
-  state.yaw = -0.75;
-  state.pitch = 0.78;
-  state.distance = 285;
+  state.yaw = 0.7;
+  state.pitch = 0.45;
+  state.distance = 200;
 });
 
 els.download.addEventListener("click", downloadStl);

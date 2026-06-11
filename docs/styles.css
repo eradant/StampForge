@@ -1,17 +1,18 @@
 :root {
   color-scheme: dark;
-  --bg: #161718;
-  --panel: #24272a;
-  --panel-strong: #2f3337;
-  --ink: #f3f0e8;
-  --muted: #aaa79c;
-  --line: #464c50;
-  --accent: #e7b14a;
-  --accent-ink: #191714;
-  --cool: #74b9c7;
-  --danger: #e86d59;
-  --shadow: 0 20px 50px rgb(0 0 0 / 32%);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg: #000000;
+  --panel: #030603;
+  --panel-strong: #071007;
+  --ink: #c8ffc8;
+  --muted: #3d7a47;
+  --line: #0d2610;
+  --accent: #33ff57;
+  --accent-ink: #000000;
+  --cool: #00ffaa;
+  --danger: #ff3333;
+  --shadow: 0 20px 50px rgb(0 255 60 / 12%);
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, 'Cascadia Code',
+    'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 * {
@@ -27,8 +28,8 @@ body {
 
 body {
   background:
-    linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px) 0 0 / 42px 42px,
-    linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px) 0 0 / 42px 42px,
+    linear-gradient(90deg, rgb(0 255 60 / 4%) 1px, transparent 1px) 0 0 / 42px 42px,
+    linear-gradient(rgb(0 255 60 / 3%) 1px, transparent 1px) 0 0 / 42px 42px,
     var(--bg);
   color: var(--ink);
 }
@@ -49,7 +50,7 @@ input {
 .panel,
 .stage {
   border: 1px solid var(--line);
-  background: rgb(36 39 42 / 92%);
+  background: rgb(3 6 3 / 96%);
   box-shadow: var(--shadow);
 }
 
@@ -77,15 +78,10 @@ input {
 }
 
 .mark {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border: 2px solid var(--accent);
-  border-radius: 8px;
+  width: 54px;
+  height: 44px;
   color: var(--accent);
-  font-weight: 800;
-  letter-spacing: 0;
+  flex-shrink: 0;
 }
 
 h1,
@@ -111,9 +107,9 @@ h1 {
   gap: 7px;
   place-items: center;
   min-height: 150px;
-  border: 1px dashed #687078;
+  border: 1px dashed var(--line);
   border-radius: 8px;
-  background: #1f2224;
+  background: #000000;
   text-align: center;
   cursor: pointer;
 }
@@ -125,7 +121,7 @@ h1 {
 }
 
 .upload-zone.is-dragging {
-  background: #272b2e;
+  background: #030f03;
 }
 
 .upload-zone input {
@@ -165,7 +161,7 @@ label {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px 12px;
-  color: #ddd8ca;
+  color: var(--ink);
   font-size: 0.9rem;
 }
 
@@ -199,7 +195,7 @@ input[type="checkbox"] {
   min-height: calc(100vh - 28px);
   overflow: hidden;
   border-radius: 8px;
-  background: #111315;
+  background: #000000;
 }
 
 #preview {
@@ -223,8 +219,8 @@ input[type="checkbox"] {
 
 .segmented,
 .icon-button {
-  border: 1px solid rgb(255 255 255 / 16%);
-  background: rgb(26 28 30 / 78%);
+  border: 1px solid rgb(51 255 87 / 18%);
+  background: rgb(0 5 0 / 88%);
   backdrop-filter: blur(12px);
   pointer-events: auto;
 }
@@ -281,7 +277,7 @@ input[type="checkbox"] {
   height: 180px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: #000000;
 }
 
 #maskCanvas.is-visible {
@@ -298,9 +294,9 @@ input[type="checkbox"] {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 16%);
+  border: 1px solid rgb(51 255 87 / 18%);
   border-radius: 8px;
-  background: rgb(255 255 255 / 14%);
+  background: rgb(51 255 87 / 8%);
   backdrop-filter: blur(14px);
 }
 
@@ -309,7 +305,7 @@ input[type="checkbox"] {
   gap: 3px;
   min-width: 0;
   padding: 12px;
-  background: rgb(24 26 28 / 82%);
+  background: rgb(0 5 0 / 92%);
 }
 
 .stats-strip span {
@@ -331,7 +327,7 @@ input[type="checkbox"] {
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #1d2022;
+  background: #000000;
   color: var(--ink);
   text-align: left;
 }

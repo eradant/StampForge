@@ -11,7 +11,7 @@ const presets = {
     ribs: false,
     pressure: "hand press",
     note: "0.2 mm nozzle or finer is recommended for crisp paper embossing.",
-    color: 0xe7b14a
+    color: 0x33ff57
   },
   thinMetal: {
     width: 70,
@@ -23,7 +23,7 @@ const presets = {
     ribs: true,
     pressure: "arbor press",
     note: "Use generous clearance and annealed thin stock to reduce tearing at sharp detail.",
-    color: 0x74b9c7
+    color: 0x00ffaa
   },
   thickMetal: {
     width: 82,
@@ -35,7 +35,7 @@ const presets = {
     ribs: true,
     pressure: "shop press",
     note: "Thicker metal needs slower pressure, larger radii, and a strong backer die.",
-    color: 0xd9d0c1
+    color: 0x66ffcc
   }
 };
 
@@ -94,44 +94,44 @@ const renderer = new THREE.WebGLRenderer({
   preserveDrawingBuffer: true
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x111315, 1);
+renderer.setClearColor(0x000000, 1);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x111315, 210, 460);
+scene.fog = new THREE.Fog(0x000000, 210, 460);
 
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 500);
-const floor = new THREE.GridHelper(260, 26, 0x30373c, 0x202529);
+const floor = new THREE.GridHelper(260, 26, 0x0d2610, 0x071308);
 floor.position.y = -7;
 floor.material.opacity = 0.32;
 floor.material.transparent = true;
 scene.add(floor);
 
-const hemi = new THREE.HemisphereLight(0xf7f1df, 0x26323a, 1.7);
+const hemi = new THREE.HemisphereLight(0x00ff66, 0x002200, 1.4);
 scene.add(hemi);
 
-const key = new THREE.DirectionalLight(0xffffff, 2.7);
+const key = new THREE.DirectionalLight(0xccffdd, 2.4);
 key.position.set(-40, -65, 96);
 scene.add(key);
 
-const rim = new THREE.DirectionalLight(0x74b9c7, 1.6);
+const rim = new THREE.DirectionalLight(0x00ff88, 1.8);
 rim.position.set(70, 35, 54);
 scene.add(rim);
 
 const materials = {
   stamp: new THREE.MeshStandardMaterial({
     color: presets.paper.color,
-    metalness: 0.18,
-    roughness: 0.46
+    metalness: 0.22,
+    roughness: 0.38
   }),
   female: new THREE.MeshStandardMaterial({
-    color: 0xbfc7c4,
-    metalness: 0.2,
-    roughness: 0.5
+    color: 0x0d4422,
+    metalness: 0.22,
+    roughness: 0.42
   }),
   side: new THREE.MeshStandardMaterial({
-    color: 0x31373a,
-    metalness: 0.08,
-    roughness: 0.72
+    color: 0x020a02,
+    metalness: 0.1,
+    roughness: 0.8
   })
 };
 
@@ -307,10 +307,10 @@ function drawMask() {
   els.maskCanvas.height = n;
   const out = maskCtx.createImageData(n, n);
   for (let i = 0; i < n * n; i += 1) {
-    const c = Math.round((1 - values[i]) * 255);
-    out.data[i * 4] = c;
-    out.data[i * 4 + 1] = c;
-    out.data[i * 4 + 2] = c;
+    const v = Math.round(values[i] * 255);
+    out.data[i * 4] = 0;
+    out.data[i * 4 + 1] = v;
+    out.data[i * 4 + 2] = Math.round(v * 0.2);
     out.data[i * 4 + 3] = 255;
   }
   maskCtx.putImageData(out, 0, 0);
@@ -433,9 +433,9 @@ function addPressRibs(group, kind) {
   const ribWidth = Math.max(2.4, width * 0.045);
   const length = width * 0.82;
   const ribMaterial = new THREE.MeshStandardMaterial({
-    color: 0x566068,
+    color: 0x1a3d1a,
     metalness: 0.12,
-    roughness: 0.62
+    roughness: 0.65
   });
 
   const bars = [
@@ -599,7 +599,7 @@ function exportBinaryStl() {
   const buffer = new ArrayBuffer(80 + 4 + triangleCount * 50);
   const view = new DataView(buffer);
   const encoder = new TextEncoder();
-  const header = encoder.encode("StampForge binary STL");
+  const header = encoder.encode("Form binary STL");
   for (let i = 0; i < header.length; i++) view.setUint8(i, header[i]);
   view.setUint32(80, triangleCount, true);
 
@@ -635,7 +635,7 @@ function downloadStl() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `stampforge-${state.preset}-${state.view}.stl`;
+  link.download = `form-${state.preset}-${state.view}.stl`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

@@ -11,7 +11,7 @@ const presets = {
     ribs: false,
     pressure: "hand press",
     note: "0.2 mm nozzle or finer is recommended for crisp paper embossing.",
-    color: 0x33ff57
+    color: 0xe7b14a
   },
   thinMetal: {
     width: 70,
@@ -23,7 +23,7 @@ const presets = {
     ribs: true,
     pressure: "arbor press",
     note: "Use generous clearance and annealed thin stock to reduce tearing at sharp detail.",
-    color: 0x00ffaa
+    color: 0x74b9c7
   },
   thickMetal: {
     width: 82,
@@ -35,7 +35,7 @@ const presets = {
     ribs: true,
     pressure: "shop press",
     note: "Thicker metal needs slower pressure, larger radii, and a strong backer die.",
-    color: 0x66ffcc
+    color: 0xd9d0c1
   }
 };
 
@@ -100,38 +100,38 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x000000, 300, 600);
 
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 600);
-const floor = new THREE.GridHelper(260, 26, 0x0d2610, 0x071308);
+const floor = new THREE.GridHelper(260, 26, 0x30373c, 0x1e2529);
 floor.position.y = -2;
 floor.material.opacity = 0.32;
 floor.material.transparent = true;
 scene.add(floor);
 
-const hemi = new THREE.HemisphereLight(0x00ff66, 0x002200, 1.4);
+const hemi = new THREE.HemisphereLight(0xf7f1df, 0x26323a, 1.5);
 scene.add(hemi);
 
-const key = new THREE.DirectionalLight(0xccffdd, 2.4);
+const key = new THREE.DirectionalLight(0xffffff, 2.7);
 key.position.set(60, 80, 40);
 scene.add(key);
 
-const rim = new THREE.DirectionalLight(0x00ff88, 1.8);
+const rim = new THREE.DirectionalLight(0x74b9c7, 1.4);
 rim.position.set(70, 35, 54);
 scene.add(rim);
 
 const materials = {
   stamp: new THREE.MeshStandardMaterial({
     color: presets.paper.color,
-    metalness: 0.22,
-    roughness: 0.38
+    metalness: 0.18,
+    roughness: 0.46
   }),
   female: new THREE.MeshStandardMaterial({
-    color: 0x0d4422,
-    metalness: 0.22,
-    roughness: 0.42
+    color: 0xbfc7c4,
+    metalness: 0.2,
+    roughness: 0.5
   }),
   side: new THREE.MeshStandardMaterial({
-    color: 0x020a02,
-    metalness: 0.1,
-    roughness: 0.8
+    color: 0x31373a,
+    metalness: 0.08,
+    roughness: 0.72
   })
 };
 
@@ -433,9 +433,9 @@ function addPressRibs(group, kind) {
   const ribWidth = Math.max(2.4, width * 0.045);
   const length = width * 0.82;
   const ribMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1a3d1a,
+    color: 0x566068,
     metalness: 0.12,
-    roughness: 0.65
+    roughness: 0.62
   });
 
   const bars = [

@@ -379,7 +379,7 @@ function createDieGeometry(kind) {
       const b = topIds[y * n + x + 1];
       const c = topIds[(y + 1) * n + x];
       const d = topIds[(y + 1) * n + x + 1];
-      indices.push(a, c, b, b, c, d);
+      indices.push(a, b, c, b, d, c);
     }
   }
 
@@ -398,7 +398,7 @@ function createDieGeometry(kind) {
       const b = bottomIds[y * n + x + 1];
       const c = bottomIds[(y + 1) * n + x];
       const d = bottomIds[(y + 1) * n + x + 1];
-      indices.push(a, b, c, b, d, c);
+      indices.push(a, c, b, b, c, d);
     }
   }
 
